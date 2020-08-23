@@ -101,7 +101,6 @@ class _MyNotificationState extends State<MyNotification>
 
   void setAlarm() {
     getDB().then((value) {
-      print("alarm set");
       if (_timer != null) {
         if (_timer.isActive) {
           _timer.cancel();
@@ -121,13 +120,11 @@ class _MyNotificationState extends State<MyNotification>
         }
         diff = (60000 * 60 * value[0]['autoalarm']) - diff;
       }
-      print(diff);
 
       _timer = Timer.periodic(Duration(milliseconds: diff), (time) {
         if (value[0]['alarmcount'] == 1) {
           return;
         } else {
-          print("del");
           onDelete(0);
           setAlarm();
         }
@@ -142,9 +139,7 @@ class _MyNotificationState extends State<MyNotification>
     _height = 80;
     // dbStream = StreamController<List<Map<String, dynamic>>>();
     getDB().then((value) {
-      print(value);
       if (value != null) {
-        print('init state');
         setAlarm();
         alarmEnabled = true;
         // addIconController.forward();
@@ -195,16 +190,13 @@ class _MyNotificationState extends State<MyNotification>
         AndroidInitializationSettings('ic_launcher');
 
     var initializationSettingsIOS = IOSInitializationSettings(
-        onDidReceiveLocalNotification: (id, title, body, payload) {
-      print("onDidReceiveLocalNotification called.");
-    });
+        onDidReceiveLocalNotification: (id, title, body, payload) {});
     var initializationSettings = InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
 
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: (payload) {
       // when user tap on notification.
-      print("onSelectNotification called.");
       setState(() {
         message = payload;
       });
@@ -220,6 +212,13 @@ class _MyNotificationState extends State<MyNotification>
         _timer.cancel();
       }
     }
+    controller.dispose();
+    opacityController.dispose();
+    alarmController.dispose();
+    setAlarmController.dispose();
+    // alarmtitleFadeController.dispose();
+    alarmtitleSlideController.dispose();
+    addIconController.dispose();
   }
 
   Future<List<Map<String, dynamic>>> getDB() async {
@@ -298,7 +297,6 @@ class _MyNotificationState extends State<MyNotification>
   void onDelete(int index) {
     try {
       String removeItem = alarmList.removeAt(0);
-      print("removed" + removeItem);
       AnimatedListRemovedItemBuilder builder = (context, animation) {
         return ItemList(item: removeItem, animation: animation, index: index);
       };
@@ -322,7 +320,6 @@ class _MyNotificationState extends State<MyNotification>
           String eachDate = DateTime.fromMillisecondsSinceEpoch(time)
               .toString()
               .substring(0, 10);
-          // print(hour);
           String alarmListString =
               (DateTime.fromMillisecondsSinceEpoch(time).hour <= 9 ? '0' : '') +
                   DateTime.fromMillisecondsSinceEpoch(time).hour.toString() +
@@ -333,7 +330,6 @@ class _MyNotificationState extends State<MyNotification>
                   DateTime.fromMillisecondsSinceEpoch(time).minute.toString();
           alarmListString = alarmListString + ' $eachDate';
           alarmList.add(alarmListString);
-          print(alarmList);
         }
       }
     });
@@ -361,7 +357,6 @@ class _MyNotificationState extends State<MyNotification>
   void setBackGroundTask() {
     Workmanager.cancelAll();
     getDB().then((value) {
-      print('auto delete db set');
       // print(DateTime.now().);
       sendNotification(int.parse(value[0]['dateTime']), value[0]['autoalarm']);
 
@@ -369,9 +364,9 @@ class _MyNotificationState extends State<MyNotification>
           DateTime.fromMillisecondsSinceEpoch(int.parse(value[0]['dateTime']))
               .difference(DateTime.now())
               .inMilliseconds;
-      for (int i = 0; i < 6; i++) {
+      for (int i = 0; i < 12; i++) {
         int hour = diff + value[0]['autoalarm'] * 60 * 60000 * i;
-        print("diff : " + diff.toString() + " hour" + hour.toString());
+        // print("diff : " + diff.toString() + " hour" + hour.toString());
         if (i == 0) {
           Workmanager.registerOneOffTask(i.toString(),
               "update", //This is the value that will be returned in the callbackDispatcher
@@ -408,7 +403,6 @@ class _MyNotificationState extends State<MyNotification>
           return ShowModal(
             onCheckPressed: () {
               _scaffoldKey.currentState.showSnackBar(snackBar);
-              print("check");
               setBackGroundTask();
               resetTimer();
               // generateList();
@@ -422,8 +416,6 @@ class _MyNotificationState extends State<MyNotification>
               });
             },
             onClearPress: () {
-              print("clear");
-              printPendingNotification();
               setState(() {
                 Navigator.pop(context);
               });

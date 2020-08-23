@@ -12,7 +12,6 @@ import 'package:path/path.dart';
 
 void callbackDispatcher() {
   Workmanager.executeTask((task, cmd) async {
-    print("HELLOwwssssnewnewsssssww");
     try {
       final db = await openDatabase(
         join(await getDatabasesPath(), 'notification.db'),
@@ -32,8 +31,6 @@ void callbackDispatcher() {
             // Ensure that the Dog has a matching id.
             where: "id = ?",
             whereArgs: [alarm['id']]);
-        // dbStream.add([alarm]);
-        print(alarm);
       } else {
         await db.delete('alarm', where: "id = 1");
         Workmanager.cancelAll();

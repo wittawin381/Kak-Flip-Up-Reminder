@@ -8,16 +8,17 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../style.dart';
 
 class PlayButton extends StatefulWidget {
-  PlayButton({this.onPressed, this.sound});
+  PlayButton({this.onPressed, this.sound, this.key}) : super(key: key);
+  Key key;
   OnPlayPress onPressed;
   String sound;
   @override
-  _PlayButtonState createState() => _PlayButtonState();
+  PlayButtonState createState() => PlayButtonState();
 }
 
 typedef OnPlayPress = void Function();
 
-class _PlayButtonState extends State<PlayButton> with TickerProviderStateMixin {
+class PlayButtonState extends State<PlayButton> with TickerProviderStateMixin {
   AnimationController buttonController;
   AudioPlayer audioPlayer;
   AudioCache audioCache = AudioCache();
@@ -46,6 +47,13 @@ class _PlayButtonState extends State<PlayButton> with TickerProviderStateMixin {
     buttonZoomAnimation = Tween<double>(begin: 0, end: 1).animate(curve);
     buttonController.forward();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    // audioCache.di
+    super.dispose();
   }
 
   @override

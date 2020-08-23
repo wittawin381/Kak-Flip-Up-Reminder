@@ -61,7 +61,7 @@ class _NotificationItemState extends State<NotificationItem> {
       'id': 1,
       'dateTime': newDate,
       'autoalarm': 2,
-      'alarmcount': 6
+      'alarmcount': 12
     };
     final db = await openDatabase(
       join(await getDatabasesPath(), 'notification.db'),
@@ -107,7 +107,7 @@ class _NotificationItemState extends State<NotificationItem> {
                 initialValue: hour,
                 infiniteLoop: true,
                 minValue: 0,
-                maxValue: 24,
+                maxValue: 23,
                 onChanged: (newValue) => setState(() => {hour = newValue}),
               ),
               NumberPicker.integer(

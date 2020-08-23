@@ -46,7 +46,6 @@ class _ShowModalState extends State<ShowModal> {
             child: NotificationItem(
               onCheckPress: () {
                 // widget.key.currentState.showSnackBar(snackBar);
-                print("check");
                 // open();
                 // alarmEnabled = true;
                 Workmanager.cancelAll();
@@ -117,7 +116,6 @@ class _ShowModalState extends State<ShowModal> {
               },
               onClearPress: () {
                 widget.onClearPress();
-                print("clear");
                 // printPendingNotification();
                 // setState(() {
                 //   Navigator.pop(context);

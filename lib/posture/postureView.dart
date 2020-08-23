@@ -1,3 +1,4 @@
+import 'package:demo/excercises/components/playbutton.dart';
 import 'package:demo/screenconfig/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
@@ -20,6 +21,7 @@ class _PostureViewState extends State<PostureView>
   AnimationController pageSlideController;
   Animation pageSlideAnimation;
   ScrollController scrollController;
+  GlobalKey<PlayButtonState> _keyChild1 = GlobalKey();
 
   @override
   void initState() {
@@ -37,51 +39,73 @@ class _PostureViewState extends State<PostureView>
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    scrollController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Screen().init(context);
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: Column(children: [
-          MyAppBar(
-            title: widget.title,
-            size: "medium",
-            backButton: true,
-            onBackButtonPress: () {
-              pageSlideController.reverse();
-            },
-            shadow: true,
-          ),
-          SlideTransition(
-              position: pageSlideAnimation,
-              child: Container(
-                  height: MediaQuery.of(context).size.height - 150,
-                  width: MediaQuery.of(context).size.width,
-                  child: ListView(
-                      physics: BouncingScrollPhysics(),
-                      padding: EdgeInsets.all(0),
-                      children: [
-                        Container(
-                          // margin: EdgeInsets.only(top: 30),
-                          width: MediaQuery.of(context).size.width,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              // Hero(
-                              //   tag: widget.tag,
-                              //   child: CircleImage(
-                              //     image: widget.data['image'],
-                              //     height: 200,
-                              //     width: 200,
-                              //   ),
-                              // ),
-                              Description(
-                                descriptions: widget.data['step'],
-                                images: widget.data['images'],
-                              )
-                            ],
-                          ),
-                        )
-                      ])))
-        ]));
+    return WillPopScope(
+        onWillPop: () {
+          if (_keyChild1.currentState.audioPlayer != null) {
+            _keyChild1.currentState.audioPlayer.stop();
+          }
+          Navigator.pop(context);
+        },
+        child: Scaffold(
+            backgroundColor: Colors.white,
+            body: Column(children: [
+              MyAppBar(
+                title: widget.title,
+                size: "medium",
+                backButton: true,
+                onBackButtonPress: () {
+                  pageSlideController.reverse();
+                  if (_keyChild1.currentState.audioPlayer != null) {
+                    _keyChild1.currentState.audioPlayer.stop();
+                  }
+                },
+                shadow: true,
+                rightItem: PlayButton(
+                  key: _keyChild1,
+                  sound: widget.data['sound'],
+                  onPressed: () {},
+                ),
+              ),
+              SlideTransition(
+                  position: pageSlideAnimation,
+                  child: Container(
+                      height: MediaQuery.of(context).size.height - 150,
+                      width: MediaQuery.of(context).size.width,
+                      child: ListView(
+                          physics: BouncingScrollPhysics(),
+                          padding: EdgeInsets.all(0),
+                          children: [
+                            Container(
+                              // margin: EdgeInsets.only(top: 30),
+                              width: MediaQuery.of(context).size.width,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // Hero(
+                                  //   tag: widget.tag,
+                                  //   child: CircleImage(
+                                  //     image: widget.data['image'],
+                                  //     height: 200,
+                                  //     width: 200,
+                                  //   ),
+                                  // ),
+                                  Description(
+                                    descriptions: widget.data['step'],
+                                    images: widget.data['images'],
+                                  )
+                                ],
+                              ),
+                            )
+                          ])))
+            ])));
   }
 }

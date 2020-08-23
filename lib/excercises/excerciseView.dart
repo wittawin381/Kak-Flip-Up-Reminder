@@ -19,6 +19,7 @@ class _ExcerciseViewState extends State<ExcerciseView>
   AnimationController pageSlideController;
   Animation pageSlideAnimation;
   AudioPlayer audioPlayer;
+  GlobalKey<PlayButtonState> _keyChild1 = GlobalKey();
   @override
   void initState() {
     // TODO: implement initState
@@ -35,64 +36,86 @@ class _ExcerciseViewState extends State<ExcerciseView>
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    pageSlideController.dispose();
+    // audioPlayer.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Screen().init(context);
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: Column(
-          children: [
-            MyAppBar(
-              title: widget.data['title'],
-              backButton: true,
-              onBackButtonPress: () {
-                pageSlideController.reverse();
-              },
-              size: "medium",
-              shadow: true,
-              rightItem: PlayButton(
-                sound: widget.data['sound'],
-                onPressed: () {},
-              ),
-            ),
-            SlideTransition(
-                position: pageSlideAnimation,
-                child: Container(
-                    height: MediaQuery.of(context).size.height - 160,
-                    child: ListView(
-                      padding: EdgeInsets.all(0),
-                      physics: BouncingScrollPhysics(),
-                      children: [
-                        Column(
+    return WillPopScope(
+        onWillPop: () {
+          if (_keyChild1.currentState.audioPlayer != null) {
+            _keyChild1.currentState.audioPlayer.stop();
+          }
+          Navigator.pop(context);
+        },
+        child: Scaffold(
+            backgroundColor: Colors.white,
+            body: Column(
+              children: [
+                MyAppBar(
+                  title: widget.data['title'],
+                  backButton: true,
+                  onBackButtonPress: () {
+                    pageSlideController.reverse();
+                    if (_keyChild1.currentState.audioPlayer != null) {
+                      _keyChild1.currentState.audioPlayer.stop();
+                    }
+                    // audioPlayer.stop();
+                  },
+                  size: "medium",
+                  shadow: true,
+                  rightItem: PlayButton(
+                    key: _keyChild1,
+                    sound: widget.data['sound'],
+                    onPressed: () {},
+                  ),
+                ),
+                SlideTransition(
+                    position: pageSlideAnimation,
+                    child: Container(
+                        height: MediaQuery.of(context).size.height - 160,
+                        child: ListView(
+                          padding: EdgeInsets.all(0),
+                          physics: BouncingScrollPhysics(),
                           children: [
-                            Container(
-                                height: MediaQuery.of(context).size.height -
-                                    160 * Screen.height,
-                                width: MediaQuery.of(context).size.width,
-                                child: ListView(
-                                    physics: BouncingScrollPhysics(),
-                                    padding: EdgeInsets.all(0),
-                                    children: [
-                                      Container(
-                                        // margin: EdgeInsets.only(top: 30),
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Description(
-                                              descriptions: widget.data['step'],
-                                              images: widget.data['images'],
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    ]))
+                            Column(
+                              children: [
+                                Container(
+                                    height: MediaQuery.of(context).size.height -
+                                        160 * Screen.height,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: ListView(
+                                        physics: BouncingScrollPhysics(),
+                                        padding: EdgeInsets.all(0),
+                                        children: [
+                                          Container(
+                                            // margin: EdgeInsets.only(top: 30),
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Description(
+                                                  descriptions:
+                                                      widget.data['step'],
+                                                  images: widget.data['images'],
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ]))
+                              ],
+                            )
                           ],
-                        )
-                      ],
-                    )))
-          ],
-        ));
+                        )))
+              ],
+            )));
   }
 }
